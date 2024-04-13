@@ -24,6 +24,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleMap myMap;
     ActivityMapBinding mapBinding;
     ActionBarDrawerToggle mToggle;
+    Intent intentMain;
+    Intent intentFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +79,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     // Implement page
                 } else if(item.getItemId()==R.id.nav_history_menu) {
                     // Implement page
+                } else if(item.getItemId()==R.id.nav_favorite_menu) {
+                    // Implement page
                 }
                 return false;
             }
@@ -88,9 +92,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 if(item.getItemId()==R.id.nav_bottom_filters) {
-                    // Implement page
-                } else if(item.getItemId()==R.id.nav_bottom_favorites) {
-                    // Implement page
+                    intentFilter = new Intent(MapActivity.this, FilterActivity.class);
+                    startActivity(intentFilter);
+                } else if(item.getItemId()==R.id.nav_bottom_list) {
+                    intentMain = new Intent(MapActivity.this, MainActivity.class);
+                    startActivity(intentMain);
                 }
                 return false;
             }

@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private final static int REQUEST_CODE = 1;
     Location currentLocation;
     Intent intentMap;
+    Intent intentFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,12 +61,17 @@ public class MainActivity extends AppCompatActivity {
         task.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                if(location != null) {
+                if (location != null) {
                     currentLocation = location;
+                } else {
+                    currentLocation = new Location("mock");
+                    currentLocation.setLatitude(43.4643); // Latitude Waterloo, Canadá
+                    currentLocation.setLongitude(-80.5204); // Longitude Waterloo, Canadá
                 }
             }
         });
     }
+
     private void askPermission() {
         ActivityCompat.requestPermissions(MainActivity.this, new String[]
                 {android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
@@ -104,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
                     // Implement page
                 } else if(item.getItemId()==R.id.nav_history_menu) {
                     // Implement page
+                } else if(item.getItemId()==R.id.nav_favorite_menu) {
+                    // Implement page
                 }
                 return false;
             }
@@ -118,9 +126,8 @@ public class MainActivity extends AppCompatActivity {
                     intentMap = new Intent(MainActivity.this, MapActivity.class);
                     startActivity(intentMap);
                 } else if(item.getItemId()==R.id.nav_bottom_filters) {
-                    // Implement page
-                } else if(item.getItemId()==R.id.nav_bottom_favorites) {
-                    // Implement page
+                    intentFilter = new Intent(MainActivity.this, FilterActivity.class);
+                    startActivity(intentFilter);
                 }
                 return false;
             }

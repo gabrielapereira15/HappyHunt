@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/nav_bottom_list"
+        android:title="@string/list_menu"
+        android:icon="@drawable/icon_list" />
+    <item
         android:id="@+id/nav_bottom_map"
         android:title="@string/map_menu"
         android:icon="@drawable/map_icon" />
@@ -8,9 +12,5 @@
         android:id="@+id/nav_bottom_filters"
         android:title="@string/filter_menu"
         android:icon="@drawable/filter_icon" />
-    <item
-        android:id="@+id/nav_bottom_favorites"
-        android:title="@string/favorite_menu"
-        android:icon="@drawable/favorite_icon" />
 
 </menu>

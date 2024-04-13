@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Happy Hunt</string>
+
+    <string name="account_menu">Account</string>
+    <string name="about_menu">About</string>
+    <string name="history_menu">History</string>
+
+    <string name="filter_menu">Filters</string>
+    <string name="favorite_menu">Favorites</string>
+    <string name="map_menu">Map</string>
+
+    <string name="nav_open">Open</string>
+    <string name="nav_close">Close</string>
+
+    <string name="login_menu">Login</string>
+</resources>

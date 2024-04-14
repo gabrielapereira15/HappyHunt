@@ -55,7 +55,7 @@ public class LocationHelper {
         mListener = listener;
         LocationRequest locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(10000); // Intervalo de atualização de localização em milissegundos
+        locationRequest.setInterval(10000);
 
         mFusedLocationClient.requestLocationUpdates(locationRequest,
                 mLocationCallback,

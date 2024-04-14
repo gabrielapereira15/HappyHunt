@@ -14,4 +14,7 @@
     <string name="nav_close">Close</string>
 
     <string name="login_menu">Login</string>
+
+    <string name="search_location_hint">Search location</string>
+    <string name="ok_button">OK</string>
 </resources>

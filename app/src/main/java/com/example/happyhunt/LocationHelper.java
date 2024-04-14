@@ -1,9 +1,11 @@
 package com.example.happyhunt;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -13,6 +15,17 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.PlaceLikelihood;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
+import com.google.android.libraries.places.api.net.PlacesClient;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LocationHelper {
 
@@ -20,6 +33,12 @@ public class LocationHelper {
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationCallback mLocationCallback;
     private LocationListener mListener;
+    private static final String TAG = "LocationHelper";
+    private final PlacesClient placesClient;
+
+    public interface PlacesCallback {
+        void onPlacesReceived(List<Place> places);
+    }
 
     public interface LocationListener {
         void onLocationReceived(Location location);
@@ -29,6 +48,10 @@ public class LocationHelper {
         this.mContext = context;
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext);
         createLocationCallback();
+
+        // Initialize the Places API
+        Places.initialize(context, context.getString(R.string.API_KEY));
+        placesClient = Places.createClient(context);
     }
 
     private void createLocationCallback() {
@@ -66,5 +89,45 @@ public class LocationHelper {
         if (mFusedLocationClient != null && mLocationCallback != null) {
             mFusedLocationClient.removeLocationUpdates(mLocationCallback);
         }
+    }
+
+    public void getNearbyPlaces(double latitude, double longitude, int radius, PlacesCallback callback) {
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, "Location permission not granted");
+            return;
+        }
+
+        // Define the fields to specify which types of place data to return
+        List<Place.Field> placeFields = new ArrayList<>();
+        placeFields.add(Place.Field.NAME);
+        placeFields.add(Place.Field.LAT_LNG);
+
+        // Create a FindCurrentPlaceRequest
+        FindCurrentPlaceRequest request = FindCurrentPlaceRequest.newInstance(placeFields);
+
+        Task<FindCurrentPlaceResponse> placeResponse = placesClient.findCurrentPlace(request);
+        placeResponse.addOnCompleteListener(new OnCompleteListener<FindCurrentPlaceResponse>() {
+            @Override
+            public void onComplete(@NonNull Task<FindCurrentPlaceResponse> task) {
+                if (task.isSuccessful()) {
+                    FindCurrentPlaceResponse response = task.getResult();
+                    if (response != null) {
+                        List<Place> places = new ArrayList<>();
+                        for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
+                            Place place = placeLikelihood.getPlace();
+                            if (place != null) {
+                                places.add(place);
+                            }
+                        }
+                        callback.onPlacesReceived(places);
+                    } else {
+                        Log.e(TAG, "No place data found");
+                    }
+                } else {
+                    Log.e(TAG, "Failed to get place data: " + task.getException().getMessage());
+                }
+            }
+        });
     }
 }

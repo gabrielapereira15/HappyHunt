@@ -15,10 +15,14 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.libraries.places.api.model.Place;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
+
+import java.util.List;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, LocationHelper.LocationListener {
     private GoogleMap myMap;
@@ -27,6 +31,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     Intent intentMain;
     Intent intentFilter;
     private LocationHelper locationHelper;
+    private static final int DEFAULT_RADIUS_METERS = 5000;
+    private Location currentLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,20 +46,22 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(MapActivity.this);
 
         locationHelper = new LocationHelper(this);
+
+        // Set an onClick listener for the search button
+        mapBinding.searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                performSearch();
+            }
+        });
     }
 
-    @Override
-    public void onMapReady(@NonNull GoogleMap googleMap) {
-        myMap = googleMap;
-        locationHelper.requestLocationUpdates(this);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(mToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    private void performSearch() {
+        //String searchText = mapBinding.searchEdittext.getText().toString().trim();
+        LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+        myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
+        // Perform a nearby search
+        performNearbySearch(currentLocation);
     }
 
     private void init() {
@@ -102,11 +110,27 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(mToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        myMap = googleMap;
+        locationHelper.requestLocationUpdates(this);
+    }
+
+    @Override
     public void onLocationReceived(Location location) {
         if (location != null) {
+            currentLocation = location;
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-            myMap.addMarker(new MarkerOptions().position(latLng).title("Current Location"));
+            MarkerOptions options = new MarkerOptions().position(latLng).title("Current Location");
+            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+            myMap.addMarker(options);
         }
     }
 
@@ -114,5 +138,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onDestroy() {
         super.onDestroy();
         locationHelper.removeLocationUpdates();
+    }
+
+    private void performNearbySearch(Location location) {
+        locationHelper.getNearbyPlaces(location.getLatitude(), location.getLongitude(), DEFAULT_RADIUS_METERS, new LocationHelper.PlacesCallback() {
+            @Override
+            public void onPlacesReceived(List<Place> places) {
+                // Plot the retrieved places on the map
+                if (places != null && !places.isEmpty()) {
+                    for (Place place : places) {
+                        LatLng placeLatLng = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
+                        myMap.addMarker(new MarkerOptions().position(placeLatLng).title(place.getName()));
+                    }
+                }
+            }
+        });
     }
 }

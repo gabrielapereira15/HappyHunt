@@ -16,8 +16,6 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.happyhunt.databinding.ActivityMainBinding;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;

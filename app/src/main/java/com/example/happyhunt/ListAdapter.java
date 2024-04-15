@@ -1,9 +1,14 @@
 package com.example.happyhunt;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,10 +23,14 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<Place> dataList;
     PlaceItemLayoutBinding placeItemBinding;
+    boolean isSaved;
+    DBHelper dbh;
+    Boolean insertStatus;
 
     public ListAdapter(List<Place> placesList, Context context) {
         super();
         this.dataList = placesList;
+        this.dbh = new DBHelper(context);
     }
 
     @NonNull
@@ -36,6 +45,33 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         ((ViewHolder) holder). bindView(dataList.get(position));
 
+        // Set OnClickListener to favorite icon
+        ((ViewHolder) holder).recyclerRowBinding.imgSaveLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int clickedPosition = holder.getAdapterPosition();
+                Place clickedPlace = dataList.get(clickedPosition);
+                Favorite placeFavorite = CreateFavorite(clickedPlace);
+                if (!isSaved) {
+                    isSaved = true;
+                    ((ViewHolder) holder).recyclerRowBinding.imgSaveLocation.setColorFilter(Color.RED);
+                    insertStatus = dbh.InsertFavorite(placeFavorite);
+                } else {
+                    isSaved = false;
+                    int deletedRows = dbh.DeleteFavorite(placeFavorite);
+                    ((ViewHolder) holder).recyclerRowBinding.imgSaveLocation.setColorFilter(Color.LTGRAY);
+                }
+            }
+        });
+
+    }
+
+    public Favorite CreateFavorite (Place placeData) {
+        Favorite objFavorite = new Favorite();
+        objFavorite.setPlaceName(placeData.getName().toString().trim());
+        objFavorite.setPlaceAddress(placeData.getAddress().toString().trim());
+        objFavorite.setType(placeData.getPlaceTypes().toString().trim());
+        return objFavorite;
     }
 
     @Override

@@ -3,12 +3,17 @@ package com.example.happyhunt;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewbinding.ViewBinding;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.example.happyhunt.databinding.ActivityMapBinding;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -19,12 +24,16 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.PlaceTypes;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, LocationHelper.LocationListener {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, LocationHelper.LocationListener, View.OnClickListener {
     private GoogleMap myMap;
     ActivityMapBinding mapBinding;
     ActionBarDrawerToggle mToggle;
@@ -33,6 +42,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private LocationHelper locationHelper;
     private static final int DEFAULT_RADIUS_METERS = 5000;
     private Location currentLocation;
+    private ArrayList<String> placeTypes = new ArrayList<>();
+    boolean isPlaceAround;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +59,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         locationHelper = new LocationHelper(this);
 
         // Set an onClick listener for the search button
-        mapBinding.searchButton.setOnClickListener(new View.OnClickListener() {
+        mapBinding.searchHeader.searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 performSearch();
@@ -68,6 +79,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mToggle = new ActionBarDrawerToggle(this, mapBinding.drawerLayout, mapBinding.materialToolbar, R.string.nav_open, R.string.nav_close);
         mapBinding.drawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
+
+        // Listeners
+        mapBinding.searchHeader.foodTypeButton.setOnClickListener(this);
+        mapBinding.searchHeader.parkTypeButton.setOnClickListener(this);
+        mapBinding.searchHeader.amusementTypeButton.setOnClickListener(this);
 
         setSupportActionBar(mapBinding.materialToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -144,14 +160,63 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         locationHelper.getNearbyPlaces(location.getLatitude(), location.getLongitude(), DEFAULT_RADIUS_METERS, new LocationHelper.PlacesCallback() {
             @Override
             public void onPlacesReceived(List<Place> places) {
-                // Plot the retrieved places on the map
+                // Check if the places returned from google api is null or empty
                 if (places != null && !places.isEmpty()) {
+                    // Clear previous markers
+                    myMap.clear();
+                    // Iterate between each place returned from google api
                     for (Place place : places) {
-                        LatLng placeLatLng = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
-                        myMap.addMarker(new MarkerOptions().position(placeLatLng).title(place.getName()));
+                        // Check if the customer place type filter is empty
+                        if (placeTypes.isEmpty()) {
+                            // Plot the retrieved places on the map
+                            LatLng placeLatLng = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
+                            myMap.addMarker(new MarkerOptions().position(placeLatLng).title(place.getName()));
+                            isPlaceAround = true;
+                        } else {
+                            // If the customer place type filter is not empty check the google place types
+                            for (String apiPlaceType : Objects.requireNonNull(place.getPlaceTypes())) {
+                                boolean result = placeTypes.contains(apiPlaceType);
+                                if (result) {
+                                    // Plot the retrieved places on the map
+                                    LatLng placeLatLng = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
+                                    myMap.addMarker(new MarkerOptions().position(placeLatLng).title(place.getName()));
+                                    isPlaceAround = true;
+                                    break;
+                                }
+                            }
+                        }
                     }
+                } else {
+                    Toast.makeText(getApplicationContext(), "Oh! No Place founded around you :/", Toast.LENGTH_LONG).show();
                 }
+                if(!isPlaceAround) {
+                    Toast.makeText(getApplicationContext(), "Oh! No Place founded around you :/", Toast.LENGTH_LONG).show();
+                }
+                isPlaceAround = false;
             }
         });
+    }
+
+    private void populateTypes (String type, ImageButton button) {
+        if (placeTypes.contains(type)) {
+            placeTypes.remove(type);
+            button.setBackgroundColor(Color.LTGRAY);
+        } else {
+            button.setBackgroundColor(Color.DKGRAY);
+            placeTypes.add(type);
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == mapBinding.searchHeader.searchButton.getId()) {
+            performSearch();
+        } else if (v.getId() == mapBinding.searchHeader.foodTypeButton.getId()) {
+            populateTypes("food", mapBinding.searchHeader.foodTypeButton);
+        } else if (v.getId() == mapBinding.searchHeader.parkTypeButton.getId()) {
+            populateTypes("park", mapBinding.searchHeader.parkTypeButton);
+        } else if (v.getId() == mapBinding.searchHeader.amusementTypeButton.getId()) {
+            populateTypes("amusement_park", mapBinding.searchHeader.amusementTypeButton);
+        }
     }
 }

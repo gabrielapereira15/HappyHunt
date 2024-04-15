@@ -1,11 +1,13 @@
 package com.example.happyhunt;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -35,6 +37,7 @@ public class LocationHelper {
     private LocationListener mListener;
     private static final String TAG = "LocationHelper";
     private final PlacesClient placesClient;
+    private static final int PERMISSION_REQUEST_CODE = 1001;
 
     public interface PlacesCallback {
         void onPlacesReceived(List<Place> places);
@@ -70,10 +73,28 @@ public class LocationHelper {
         };
     }
 
+    public void requestLocationPermissions(Activity activity) {
+        ActivityCompat.requestPermissions(activity,
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                PERMISSION_REQUEST_CODE);
+    }
+
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (mListener != null) {
+                    requestLocationUpdates(mListener);
+                }
+            } else {
+                Toast.makeText(mContext, "Location permission is not allowed! This app needs to access your location!", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
     public void requestLocationUpdates(final LocationListener listener) {
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
+            requestLocationPermissions((Activity) mContext);
         }
         mListener = listener;
         LocationRequest locationRequest = LocationRequest.create();
@@ -94,14 +115,14 @@ public class LocationHelper {
     public void getNearbyPlaces(double latitude, double longitude, int radius, PlacesCallback callback) {
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.e(TAG, "Location permission not granted");
-            return;
+            requestLocationPermissions((Activity) mContext);
         }
 
         // Define the fields to specify which types of place data to return
         List<Place.Field> placeFields = new ArrayList<>();
         placeFields.add(Place.Field.NAME);
         placeFields.add(Place.Field.LAT_LNG);
+        placeFields.add(Place.Field.TYPES);
 
         // Create a FindCurrentPlaceRequest
         FindCurrentPlaceRequest request = FindCurrentPlaceRequest.newInstance(placeFields);

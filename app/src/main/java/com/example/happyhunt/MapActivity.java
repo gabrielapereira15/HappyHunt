@@ -57,21 +57,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(MapActivity.this);
 
         locationHelper = new LocationHelper(this);
-
-        // Set an onClick listener for the search button
-        mapBinding.searchHeader.searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                performSearch();
-            }
-        });
     }
 
     private void performSearch() {
-        //String searchText = mapBinding.searchEdittext.getText().toString().trim();
         LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
         myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
-        // Perform a nearby search
         performNearbySearch(currentLocation);
     }
 
@@ -84,6 +74,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapBinding.searchHeader.foodTypeButton.setOnClickListener(this);
         mapBinding.searchHeader.parkTypeButton.setOnClickListener(this);
         mapBinding.searchHeader.amusementTypeButton.setOnClickListener(this);
+        mapBinding.searchHeader.searchButton.setOnClickListener(this);
 
         setSupportActionBar(mapBinding.materialToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

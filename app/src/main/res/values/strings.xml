@@ -17,4 +17,10 @@
 
     <string name="search_location_hint">Search location</string>
     <string name="ok_button">OK</string>
+
+    <string name="rating_text_default">No rating</string>
+    <string name="rating_value_default">0.0</string>
+    <string name="place_name_default">Place name not provided</string>
+    <string name="place_address_default">Place address not provided</string>
+    <string name="place_description_default">Place description not provided</string>
 </resources>

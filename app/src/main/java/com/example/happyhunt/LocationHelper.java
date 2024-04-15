@@ -122,6 +122,8 @@ public class LocationHelper {
         List<Place.Field> placeFields = new ArrayList<>();
         placeFields.add(Place.Field.NAME);
         placeFields.add(Place.Field.LAT_LNG);
+        placeFields.add(Place.Field.ADDRESS);
+        placeFields.add(Place.Field.RATING);
         placeFields.add(Place.Field.TYPES);
 
         // Create a FindCurrentPlaceRequest

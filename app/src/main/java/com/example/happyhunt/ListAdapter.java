@@ -1,14 +1,12 @@
 package com.example.happyhunt;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,7 +15,6 @@ import com.example.happyhunt.databinding.PlaceItemLayoutBinding;
 import com.google.android.libraries.places.api.model.Place;
 
 import java.util.List;
-import java.util.Vector;
 
 public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -25,9 +22,8 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     PlaceItemLayoutBinding placeItemBinding;
     boolean isSaved;
     DBHelper dbh;
-    Boolean insertStatus;
 
-    public ListAdapter(List<Place> placesList, Context context) {
+    public ListAdapter(List placesList, Context context) {
         super();
         this.dataList = placesList;
         this.dbh = new DBHelper(context);
@@ -43,7 +39,8 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ((ViewHolder) holder). bindView(dataList.get(position));
+        Cursor cursor1 = dbh.readFavorites();
+        ((ViewHolder) holder). bindView(dataList.get(position), cursor1);
 
         // Set OnClickListener to favorite icon
         ((ViewHolder) holder).recyclerRowBinding.imgSaveLocation.setOnClickListener(new View.OnClickListener() {
@@ -55,10 +52,10 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 if (!isSaved) {
                     isSaved = true;
                     ((ViewHolder) holder).recyclerRowBinding.imgSaveLocation.setColorFilter(Color.RED);
-                    insertStatus = dbh.InsertFavorite(placeFavorite);
+                    dbh.InsertFavorite(placeFavorite);
                 } else {
                     isSaved = false;
-                    int deletedRows = dbh.DeleteFavorite(placeFavorite);
+                    dbh.DeleteFavorite(placeFavorite);
                     ((ViewHolder) holder).recyclerRowBinding.imgSaveLocation.setColorFilter(Color.LTGRAY);
                 }
             }
@@ -86,10 +83,21 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             this.recyclerRowBinding = recyclerRowBinding;
         }
 
-        public void bindView(Place placeData) {
+        public void bindView(Place placeData, Cursor cursor1) {
             recyclerRowBinding.txtPlaceDRating.setText(String.valueOf(placeData.getRating()));
             recyclerRowBinding.txtPlaceName.setText(placeData.getName());
             recyclerRowBinding.txtPlaceAddress.setText(placeData.getAddress());
+
+            if (cursor1.moveToFirst()) {
+                do {
+                    @SuppressLint("Range") String favoritePlaceName = cursor1.getString(cursor1.getColumnIndex("placeName"));
+                    if (placeData.getName().equals(favoritePlaceName)) {
+                        recyclerRowBinding.imgSaveLocation.setColorFilter(Color.RED);
+                    }
+                } while (cursor1.moveToNext());
+            }
+            cursor1.close();
+
         }
     }
 }

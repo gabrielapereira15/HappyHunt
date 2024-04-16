@@ -2,6 +2,7 @@ package com.example.happyhunt;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -32,20 +33,29 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean InsertFavorite(Favorite objFavorite) {
+    public void InsertFavorite(Favorite objFavorite) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COL2, objFavorite.getPlaceName());
         cv.put(COL3, objFavorite.getPlaceAddress());
         cv.put(COL4, objFavorite.getType());
         long result = db.insert(FAVORITE_TABLE_NAME, null, cv);
-        return (result != -1);
     }
 
-    public Integer DeleteFavorite(Favorite objFavorite) {
+    public void DeleteFavorite(Favorite objFavorite) {
         SQLiteDatabase db = this.getWritableDatabase();
         String whereClause = "placeName=?";
         String[] whereArgs = new String[]{objFavorite.getPlaceName()};
-        return db.delete(FAVORITE_TABLE_NAME, whereClause, whereArgs);
+        db.delete(FAVORITE_TABLE_NAME, whereClause, whereArgs);
+    }
+
+    public Cursor readFavorites() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursorObj;
+        cursorObj = db.rawQuery("select * from " + FAVORITE_TABLE_NAME, null);
+        if (cursorObj != null) {
+            cursorObj.moveToFirst();
+        }
+        return cursorObj;
     }
 }

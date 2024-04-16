@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ActionBarDrawerToggle mToggle;
     Intent intentMap;
     Intent intentFilter;
+    Intent intentFavorite;
     private LocationHelper locationHelper;
     private Location currentLocation;
     private static final int DEFAULT_RADIUS_METERS = 5000;
@@ -85,7 +86,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 } else if (item.getItemId() == R.id.nav_history_menu) {
                     // Implement page
                 } else if (item.getItemId() == R.id.nav_favorite_menu) {
-                    // Implement page
+                    intentFavorite = new Intent(MainActivity.this, FavoriteActivity.class);
+                    startActivity(intentFavorite);
                 }
                 return false;
             }

@@ -14,9 +14,5 @@
         android:id="@+id/nav_favorite_menu"
         android:icon="@drawable/menu_icon"
         android:title="@string/favorite_menu"/>
-    <item
-        android:id="@+id/nav_history_menu"
-        android:icon="@drawable/menu_icon"
-        android:title="@string/history_menu"/>
 </menu>
 

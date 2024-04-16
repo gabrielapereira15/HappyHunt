@@ -1,4 +1,4 @@
-package com.example.happyhunt;
+package com.example.happyhunt.Util;
 
 import android.Manifest;
 import android.app.Activity;
@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
+import com.example.happyhunt.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;

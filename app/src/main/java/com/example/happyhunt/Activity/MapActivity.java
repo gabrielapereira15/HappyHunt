@@ -1,11 +1,9 @@
-package com.example.happyhunt;
+package com.example.happyhunt.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewbinding.ViewBinding;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
@@ -15,6 +13,8 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.example.happyhunt.Util.LocationHelper;
+import com.example.happyhunt.R;
 import com.example.happyhunt.databinding.ActivityMapBinding;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -24,21 +24,21 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.model.PlaceTypes;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, LocationHelper.LocationListener, View.OnClickListener {
     private GoogleMap myMap;
     ActivityMapBinding mapBinding;
     ActionBarDrawerToggle mToggle;
     Intent intentMain;
-    Intent intentFilter;
+    Intent intentAbout;
+    Intent intentAccount;
+    Intent intentFavorite;
     private LocationHelper locationHelper;
     private static final int DEFAULT_RADIUS_METERS = 5000;
     private Location currentLocation;
@@ -51,18 +51,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapBinding = ActivityMapBinding.inflate(getLayoutInflater());
         View view = mapBinding.getRoot();
         setContentView(view);
-        init();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(MapActivity.this);
 
         locationHelper = new LocationHelper(this);
+
+        init();
     }
 
     private void performSearch() {
-        LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-        myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
-        performNearbySearch(currentLocation);
+        if (currentLocation != null) {
+            LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+            myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
+            performNearbySearch(currentLocation);
+        }
     }
 
     private void init() {
@@ -80,6 +83,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         SetNavigationDrawer();
         SetBottomNavigation();
+
+        performSearch();
     }
 
     private void SetNavigationDrawer() {
@@ -87,13 +92,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 if(item.getItemId()==R.id.nav_account_menu) {
-                    // Implement page
+                    intentAccount = new Intent(MapActivity.this, LoginActivity.class);
+                    startActivity(intentAccount);
                 } else if(item.getItemId()==R.id.nav_about_menu) {
-                    // Implement page
-                } else if(item.getItemId()==R.id.nav_history_menu) {
-                    // Implement page
+                    intentAbout = new Intent(MapActivity.this, AboutActivity.class);
+                    startActivity(intentAbout);
                 } else if(item.getItemId()==R.id.nav_favorite_menu) {
-                    // Implement page
+                    intentFavorite = new Intent(MapActivity.this, FavoriteActivity.class);
+                    startActivity(intentFavorite);
                 }
                 return false;
             }
@@ -104,10 +110,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapBinding.bottomNavView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                if(item.getItemId()==R.id.nav_bottom_filters) {
-                    intentFilter = new Intent(MapActivity.this, FilterActivity.class);
-                    startActivity(intentFilter);
-                } else if(item.getItemId()==R.id.nav_bottom_list) {
+                if(item.getItemId()==R.id.nav_bottom_list) {
                     intentMain = new Intent(MapActivity.this, MainActivity.class);
                     startActivity(intentMain);
                 }

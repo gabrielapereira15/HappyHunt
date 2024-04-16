@@ -1,4 +1,4 @@
-package com.example.happyhunt;
+package com.example.happyhunt.Model;
 
 public class Favorite {
     private int id;

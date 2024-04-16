@@ -1,4 +1,4 @@
-package com.example.happyhunt;
+package com.example.happyhunt.Adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.happyhunt.Util.DBHelper;
+import com.example.happyhunt.Model.Favorite;
 import com.example.happyhunt.databinding.PlaceItemLayoutBinding;
 import com.google.android.libraries.places.api.model.Place;
 

@@ -1,4 +1,4 @@
-package com.example.happyhunt;
+package com.example.happyhunt.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -15,6 +15,9 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.example.happyhunt.Adapter.ListAdapter;
+import com.example.happyhunt.Util.LocationHelper;
+import com.example.happyhunt.R;
 import com.example.happyhunt.databinding.ActivityMainBinding;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.material.navigation.NavigationBarView;
@@ -29,7 +32,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ActivityMainBinding mainBinding;
     ActionBarDrawerToggle mToggle;
     Intent intentMap;
-    Intent intentFilter;
+    Intent intentAccount;
+    Intent intentAbout;
     Intent intentFavorite;
     private LocationHelper locationHelper;
     private Location currentLocation;
@@ -44,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mainBinding = ActivityMainBinding.inflate(getLayoutInflater());
         View view = mainBinding.getRoot();
         setContentView(view);
-        init();
 
         // Initialize LocationHelper
         locationHelper = new LocationHelper(this);
@@ -56,6 +59,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 currentLocation = location;
             }
         });
+
+        init();
     }
 
     private void init() {
@@ -73,19 +78,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         SetNavigationDrawer();
         SetBottomNavigation();
+
+        if (currentLocation != null) {
+            performNearbySearch(currentLocation);
+        }
     }
 
     private void SetNavigationDrawer() {
         mainBinding.navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                if (item.getItemId() == R.id.nav_account_menu) {
-                    // Implement page
-                } else if (item.getItemId() == R.id.nav_about_menu) {
-                    // Implement page
-                } else if (item.getItemId() == R.id.nav_history_menu) {
-                    // Implement page
-                } else if (item.getItemId() == R.id.nav_favorite_menu) {
+                if(item.getItemId()==R.id.nav_account_menu) {
+                    intentAccount = new Intent(MainActivity.this, LoginActivity.class);
+                    startActivity(intentAccount);
+                } else if(item.getItemId()==R.id.nav_about_menu) {
+                    intentAbout = new Intent(MainActivity.this, AboutActivity.class);
+                    startActivity(intentAbout);
+                } else if(item.getItemId()==R.id.nav_favorite_menu) {
                     intentFavorite = new Intent(MainActivity.this, FavoriteActivity.class);
                     startActivity(intentFavorite);
                 }
@@ -101,9 +110,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (item.getItemId() == R.id.nav_bottom_map) {
                     intentMap = new Intent(MainActivity.this, MapActivity.class);
                     startActivity(intentMap);
-                } else if (item.getItemId() == R.id.nav_bottom_filters) {
-                    intentFilter = new Intent(MainActivity.this, FilterActivity.class);
-                    startActivity(intentFilter);
                 }
                 return false;
             }

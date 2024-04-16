@@ -1,4 +1,4 @@
-package com.example.happyhunt;
+package com.example.happyhunt.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -14,8 +13,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.happyhunt.Util.DBHelper;
+import com.example.happyhunt.Model.Favorite;
+import com.example.happyhunt.Adapter.FavoriteAdapter;
+import com.example.happyhunt.R;
 import com.example.happyhunt.databinding.ActivityFavoriteBinding;
-import com.google.android.libraries.places.api.model.Place;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 
@@ -29,7 +31,9 @@ public class FavoriteActivity extends AppCompatActivity {
     DBHelper dbh;
     Intent intentMap;
     Intent intentMain;
-    Intent intentFilter;
+    Intent intentAccount;
+    Intent intentAbout;
+    Intent intentFavorite;
     ActionBarDrawerToggle mToggle;
 
     @Override
@@ -74,12 +78,15 @@ public class FavoriteActivity extends AppCompatActivity {
         favoriteBinding.navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                if (item.getItemId() == R.id.nav_account_menu) {
-                    // Implement page
-                } else if (item.getItemId() == R.id.nav_about_menu) {
-                    // Implement page
-                } else if (item.getItemId() == R.id.nav_history_menu) {
-                    // Implement page
+                if(item.getItemId()==R.id.nav_account_menu) {
+                    intentAccount = new Intent(FavoriteActivity.this, LoginActivity.class);
+                    startActivity(intentAccount);
+                } else if(item.getItemId()==R.id.nav_about_menu) {
+                    intentAbout = new Intent(FavoriteActivity.this, AboutActivity.class);
+                    startActivity(intentAbout);
+                } else if(item.getItemId()==R.id.nav_favorite_menu) {
+                    intentFavorite = new Intent(FavoriteActivity.this, FavoriteActivity.class);
+                    startActivity(intentFavorite);
                 }
                 return false;
             }
@@ -93,9 +100,6 @@ public class FavoriteActivity extends AppCompatActivity {
                 if (item.getItemId() == R.id.nav_bottom_map) {
                     intentMap = new Intent(FavoriteActivity.this, MapActivity.class);
                     startActivity(intentMap);
-                } else if (item.getItemId() == R.id.nav_bottom_filters) {
-                    intentFilter = new Intent(FavoriteActivity.this, FilterActivity.class);
-                    startActivity(intentFilter);
                 } else if (item.getItemId() == R.id.nav_bottom_list) {
                     intentMain = new Intent(FavoriteActivity.this, MainActivity.class);
                     startActivity(intentMain);

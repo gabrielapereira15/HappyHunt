@@ -8,9 +8,5 @@
         android:id="@+id/nav_bottom_map"
         android:title="@string/map_menu"
         android:icon="@drawable/map_icon" />
-    <item
-        android:id="@+id/nav_bottom_filters"
-        android:title="@string/filter_menu"
-        android:icon="@drawable/filter_icon" />
 
 </menu>

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".Activity.MainActivity">
+    tools:context=".Activity.RegistrationActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/materialToolbar"
@@ -29,24 +29,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-
-            <include
-                android:id="@+id/search_header"
-                layout="@layout/search_header"
-                app:layout_constraintBottom_toTopOf="@+id/recyclerView"
-                app:layout_constraintStart_toStartOf="@+id/frame"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginBottom="81dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/search_header" />
-
 
             <FrameLayout
                 android:id="@+id/frame"

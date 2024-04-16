@@ -14,13 +14,20 @@
     <string name="nav_close">Close</string>
 
     <string name="login_menu">Login</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="username">Username</string>
+    <string name="login_string">Do you have an account? Login</string>
 
     <string name="search_location_hint">Search location</string>
     <string name="ok_button">OK</string>
+
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
 
     <string name="rating_text_default">No rating</string>
     <string name="rating_value_default">0.0</string>
     <string name="place_name_default">Place name not provided</string>
     <string name="place_address_default">Place address not provided</string>
     <string name="place_description_default">Place description not provided</string>
+    <string name="about_me">My name is Gabriela, I am Brazilian and a mother of two wonderful children. In July 2023, I made the exciting decision to move to Canada in search of new opportunities and experiences. I have been a developer for four years and discovered my passion for this profession along the way. I am excited to continue growing and learning on this exciting journey as a developer</string>
 </resources>

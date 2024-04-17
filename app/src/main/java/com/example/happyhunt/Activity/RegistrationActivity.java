@@ -18,22 +18,33 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
 
     ActivityRegistrationBinding registrationBinding;
     Intent intentMain;
-    Intent intentLogin;
+    Intent intentLogged;
     DBHelper dbh;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        dbh = new DBHelper(this);
+
+        if (isUserLogged()) {
+            intentLogged = new Intent(RegistrationActivity.this, LoggedActivity.class);
+            startActivity(intentLogged);
+        }
         registrationBinding = ActivityRegistrationBinding.inflate(getLayoutInflater());
         View view = registrationBinding.getRoot();
         setContentView(view);
 
         registrationBinding.btnBack.setOnClickListener(this);
         registrationBinding.btnSignUp.setOnClickListener(this);
-        registrationBinding.txtLogin.setOnClickListener(this);
-
-        dbh = new DBHelper(this);
-
     }
+
+    private boolean isUserLogged() {
+        Cursor cursor1 = dbh.readProfile();
+        if (cursor1.getCount() == 0) {
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public void onClick(View v) {
         if(v.getId() == registrationBinding.btnBack.getId()) {
@@ -50,9 +61,6 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                     Toast.makeText(this, "User already registered, please login!", Toast.LENGTH_LONG).show();
                 }
             }
-        } else if(v.getId() == registrationBinding.txtLogin.getId()) {
-            intentLogin = new Intent(RegistrationActivity.this, LoginActivity.class);
-            startActivity(intentLogin);
         }
     }
 

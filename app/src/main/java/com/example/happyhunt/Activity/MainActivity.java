@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onLocationReceived(Location location) {
                 currentLocation = location;
+                performNearbySearch(currentLocation);
             }
         });
 
@@ -78,10 +79,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         SetNavigationDrawer();
         SetBottomNavigation();
-
-        if (currentLocation != null) {
-            performNearbySearch(currentLocation);
-        }
     }
 
     private void SetNavigationDrawer() {
@@ -89,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 if(item.getItemId()==R.id.nav_account_menu) {
-                    intentAccount = new Intent(MainActivity.this, LoginActivity.class);
+                    intentAccount = new Intent(MainActivity.this, RegistrationActivity.class);
                     startActivity(intentAccount);
                 } else if(item.getItemId()==R.id.nav_about_menu) {
                     intentAbout = new Intent(MainActivity.this, AboutActivity.class);

@@ -2,15 +2,20 @@ package com.example.happyhunt.Adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.appcompat.app.AlertDialog;
+import android.content.DialogInterface;
+
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.happyhunt.Activity.MainActivity;
 import com.example.happyhunt.Util.DBHelper;
 import com.example.happyhunt.Model.Favorite;
 import com.example.happyhunt.databinding.PlaceItemLayoutBinding;
@@ -48,21 +53,44 @@ public class ListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         ((ViewHolder) holder).recyclerRowBinding.imgSaveLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int clickedPosition = holder.getAdapterPosition();
-                Place clickedPlace = dataList.get(clickedPosition);
-                Favorite placeFavorite = CreateFavorite(clickedPlace);
-                if (!isSaved) {
-                    isSaved = true;
-                    ((ViewHolder) holder).recyclerRowBinding.imgSaveLocation.setColorFilter(Color.RED);
-                    dbh.InsertFavorite(placeFavorite);
+                if (isUserLogged()) {
+                    int clickedPosition = holder.getAdapterPosition();
+                    Place clickedPlace = dataList.get(clickedPosition);
+                    Favorite placeFavorite = CreateFavorite(clickedPlace);
+                    if (!isSaved) {
+                        isSaved = true;
+                        ((ViewHolder) holder).recyclerRowBinding.imgSaveLocation.setColorFilter(Color.RED);
+                        dbh.InsertFavorite(placeFavorite);
+                    } else {
+                        isSaved = false;
+                        dbh.DeleteFavorite(placeFavorite);
+                        ((ViewHolder) holder).recyclerRowBinding.imgSaveLocation.setColorFilter(Color.LTGRAY);
+                    }
                 } else {
-                    isSaved = false;
-                    dbh.DeleteFavorite(placeFavorite);
-                    ((ViewHolder) holder).recyclerRowBinding.imgSaveLocation.setColorFilter(Color.LTGRAY);
+                    new AlertDialog.Builder(placeItemBinding.getRoot().getContext())
+                            .setMessage("User not registered, please login to favorite places!")
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.dismiss();
+                                    Intent intentMain = new Intent(placeItemBinding.getRoot().getContext(), MainActivity.class);
+                                    placeItemBinding.getRoot().getContext().startActivity(intentMain);
+                                }
+
+                            })
+                            .setCancelable(false)
+                            .show();
                 }
             }
         });
 
+    }
+
+    private boolean isUserLogged() {
+        Cursor cursor1 = dbh.readProfile();
+        if (cursor1.getCount() == 0) {
+            return false;
+        }
+        return true;
     }
 
     public Favorite CreateFavorite (Place placeData) {

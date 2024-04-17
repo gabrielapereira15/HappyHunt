@@ -90,4 +90,9 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         return cursorObj;
     }
+
+    public int deleteProfile(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete(PROFILE_TABLE_NAME, "id="+id, null);
+    }
 }

@@ -83,8 +83,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         SetNavigationDrawer();
         SetBottomNavigation();
-
-        performSearch();
     }
 
     private void SetNavigationDrawer() {
@@ -92,7 +90,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 if(item.getItemId()==R.id.nav_account_menu) {
-                    intentAccount = new Intent(MapActivity.this, LoginActivity.class);
+                    intentAccount = new Intent(MapActivity.this, RegistrationActivity.class);
                     startActivity(intentAccount);
                 } else if(item.getItemId()==R.id.nav_about_menu) {
                     intentAbout = new Intent(MapActivity.this, AboutActivity.class);
